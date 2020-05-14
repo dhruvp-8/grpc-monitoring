@@ -26,9 +26,9 @@ func (m mongo) Close() error {
 }
 
 func (m mongo) Write(r requestAnalytics) error {
-	return m.sess.DB("metrics_tb").C(collectionName).Insert(r)
+	return m.sess.DB("metrics_db").C(collectionName).Insert(r)
 }
 
 func (m mongo) Count() (int, error) {
-	return m.sess.DB("metrics_tb").C(collectionName).Count()
+	return m.sess.DB("metrics_db").C(collectionName).Count()
 }
