@@ -144,6 +144,7 @@ func newMongo(addr string) (mongo, error) {
 	}, nil
 }
 
+// Data {average_response_time, stats_per_route, requests_per_day, requests_per_hour, total_requests}
 type Data struct {
 	AverageResponseTime float64          `json:"average_response_time"`
 	StatsPerRoute       []statsPerRoute  `json:"stats_per_route"`

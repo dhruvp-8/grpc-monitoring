@@ -2,9 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"sync"
+	"text/template"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -56,4 +60,46 @@ func main() {
 
 	log.Println("Successfully connected to MongoDB")
 
+	mux.use(analyticsMiddleware(m, client))
+
+	var once sync.Once
+	var t *template.Template
+
+	workDir, _ := os.Getwd()
+	filesDir := filepath.Join(workDir, "static")
+	fileServer(mux, "/static/build", http.Dir(filesDir))
+
+	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+
+		once.Do(func() {
+			tem, err := template.ParseFiles("static/build/index.html")
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			t = tem.Lookup("index.html")
+		})
+
+		t.Execute(w, nil)
+	})
+
+	mux.Get("/api/analytics", analyticsAPI(m))
+	mux.Get("/wait/{seconds}", waitHandler)
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), mux))
+}
+
+func fileServer(r chi.Router, path string, root http.FileSystem) {
+}
+
+func analyticsAPI(m mongo) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+func analyticsMiddleware(m mongo, client *pusher.Client) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		}
+	}
 }
