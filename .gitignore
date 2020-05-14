@@ -13,3 +13,6 @@
 
 # Environment Variables
 **.env
+
+# Mac OS Temp Files
+*.DS_Store
