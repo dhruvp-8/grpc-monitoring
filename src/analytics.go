@@ -32,3 +32,14 @@ func (m mongo) Write(r requestAnalytics) error {
 func (m mongo) Count() (int, error) {
 	return m.sess.DB("metrics_db").C(collectionName).Count()
 }
+
+func newMongo(addr string) (mongo, error) {
+	sess, err := mgo.Dial(addr)
+	if err != nil {
+		return mongo{}, err
+	}
+
+	return mongo{
+		sess: sess,
+	}, nil
+}
