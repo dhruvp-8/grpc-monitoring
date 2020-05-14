@@ -90,10 +90,43 @@ func main() {
 }
 
 func fileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit URL parameters.")
+	}
+
+	fs := http.StripPrefix(path, http.FileServer(root))
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+
+	path += "*"
+
+	r.Get(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
+	}))
 }
 
 func analyticsAPI(m mongo) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := m.getAggregatedAnalytics()
+		if err != nil {
+			log.Println(err)
+
+			json.NewEncoder(w).Encode(&struct {
+				Message   string `json:"message"`
+				TimeStamp int64  `json:"timestamp"`
+			}{
+				Message:   "An error occurred while fetching analytics data",
+				TimeStamp: time.Now().Unix(),
+			})
+
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(data)
 	}
 }
 
