@@ -70,7 +70,7 @@ func main() {
 
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "public")
-	fileServer(mux, "/public/", http.Dir(filesDir))
+	fileServer(mux, "/public", http.Dir(filesDir))
 
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 

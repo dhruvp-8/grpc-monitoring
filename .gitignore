@@ -22,6 +22,7 @@
 **/analytics-frontend/yarn.lock
 **/analytics-frontend/yarn-error.log
 **/analytics-frontend/package-lock.json
+**/analytics-frontend/build
 
 # VS Editor
 *.vscode
