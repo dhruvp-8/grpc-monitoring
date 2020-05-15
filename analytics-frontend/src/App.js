@@ -1,12 +1,11 @@
 import React from "react";
 import "./App.css";
+import ApplicationDashboard from "./components/ApplicationDashboard";
 
 function App() {
 	return (
 		<div className="App">
-			<header className="App-header">
-				<h1>Dashboard frontend</h1>
-			</header>
+			<ApplicationDashboard></ApplicationDashboard>
 		</div>
 	);
 }
