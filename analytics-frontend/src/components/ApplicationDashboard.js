@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios';
+import Pusher from 'pusher-js'
 
 class ApplicationDashboard extends Component {
 	
@@ -10,17 +11,38 @@ class ApplicationDashboard extends Component {
 	}
 
 	componentDidMount() {
+		this.setUpPusher()
+
 		axios.get('http://localhost:4000/api/analytics')
 			.then(res => {
-
 				const responseData = res["data"]
-				console.log(responseData)
-				this.setState({
-					avgRespTime : responseData["average_response_time"],
-					childStatus : responseData["stats_per_route"],
-					totalRequests : responseData["total_requests"]
-				})
+				this.setMetrics(responseData)
 			})
+	}
+
+	// Updating state variables with the response data
+	setMetrics = (responseData) => {
+		this.setState({
+			avgRespTime : responseData["average_response_time"],
+			childStatus : responseData["stats_per_route"],
+			totalRequests : responseData["total_requests"]
+		})
+	}
+
+	// Setting up pusher subscribers for updating the UI based on events from publisher
+	setUpPusher = () => {
+		// environment variables
+		const app_key = process.env.REACT_APP_PUSHER_APP_KEY
+		const cluster_key = process.env.REACT_APP_PUSHER_APP_CLUSTER
+		// setting up pusher object
+		var pusher = new Pusher(app_key, {
+			cluster: cluster_key
+		})
+		// subscribing to the channel grpc-monitoring
+		var channel = pusher.subscribe("grpc-monitoring")
+		channel.bind('data', data => {
+			this.setMetrics(data)
+		})
 	}
 	
 	render() {
