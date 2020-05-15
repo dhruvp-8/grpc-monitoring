@@ -110,7 +110,7 @@ func loadEnvFileFromS3(bucket string, item string) {
 
 	defer file.Close()
 
-	// Initialize a session in us-west-2 that the SDK will use to load
+	// Initialize a session in us-west-1 that the SDK will use to load
 	// credentials from the shared credentials file ~/.aws/credentials.
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-1")},

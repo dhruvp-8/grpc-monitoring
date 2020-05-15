@@ -5,6 +5,11 @@ ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+echo "${CYAN}Creating the env file for React Frontend"
+cd src
+go run utils/get_env.go
+cd ..
+
 cd analytics-frontend
 
 echo "${CYAN}Creating the build file for the front-end...${NC}\n"
