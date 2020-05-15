@@ -17,15 +17,24 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	"github.com/pusher/pusher-http-go"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 const defaultSleepTime = time.Second * 2
+const bucket = "grpc-monitoring-config-data"
+const item = "env"
 
 func main() {
 	httpPort := flag.Int("http.port", 4000, "HTTP Port to run server on")
 	mongoDSN := flag.String("mongo.dsn", "localhost:27017", "DSN for mongoDB server")
 
 	flag.Parse()
+
+	loadEnvFileFromS3(bucket, item)
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
@@ -90,6 +99,40 @@ func main() {
 	mux.Get("/wait/{seconds}", waitHandler)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *httpPort), mux))
+}
+
+func loadEnvFileFromS3(bucket string, item string) {
+
+	file, err := os.Create("." + item)
+	if err != nil {
+		exitErrorf("Unable to open file %q, %v", item, err)
+	}
+
+	defer file.Close()
+
+	// Initialize a session in us-west-2 that the SDK will use to load
+	// credentials from the shared credentials file ~/.aws/credentials.
+	sess, _ := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-1")},
+	)
+
+	downloader := s3manager.NewDownloader(sess)
+
+	numBytes, err := downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(item),
+		})
+	if err != nil {
+		exitErrorf("Unable to download item %q, %v", item, err)
+	}
+
+	fmt.Println("Successfully Downloaded", file.Name(), numBytes, "bytes")
+}
+
+func exitErrorf(msg string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, msg+"\n", args...)
+	os.Exit(1)
 }
 
 func fileServer(r chi.Router, path string, root http.FileSystem) {
