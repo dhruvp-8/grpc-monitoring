@@ -15,7 +15,7 @@
 **.env
 
 # MacOS Temp Files
-*.DS_Store
+**.DS_Store
 
 # Frontend Dependencies
 **/analytics-frontend/node_modules
