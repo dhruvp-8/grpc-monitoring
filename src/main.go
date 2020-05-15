@@ -69,13 +69,13 @@ func main() {
 	var t *template.Template
 
 	workDir, _ := os.Getwd()
-	filesDir := filepath.Join(workDir, "static")
-	fileServer(mux, "/static/build", http.Dir(filesDir))
+	filesDir := filepath.Join(workDir, "public")
+	fileServer(mux, "/public/build", http.Dir(filesDir))
 
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 		once.Do(func() {
-			tem, err := template.ParseFiles("static/build/index.html")
+			tem, err := template.ParseFiles("public/build/index.html")
 			if err != nil {
 				log.Fatal(err)
 			}
