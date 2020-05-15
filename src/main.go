@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
 	"text/template"
 	"time"
@@ -60,7 +63,7 @@ func main() {
 
 	log.Println("Successfully connected to MongoDB")
 
-	mux.use(analyticsMiddleware(m, client))
+	mux.Use(analyticsMiddleware(m, client))
 
 	var once sync.Once
 	var t *template.Template
@@ -133,6 +136,49 @@ func analyticsAPI(m mongo) http.HandlerFunc {
 func analyticsMiddleware(m mongo, client *pusher.Client) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		}
+
+			startTime := time.Now()
+
+			defer func() {
+
+				if strings.HasPrefix(r.URL.String(), "/wait") {
+
+					data := requestAnalytics{
+						URL:         r.URL.String(),
+						Method:      r.Method,
+						RequestTime: time.Now().Unix() - startTime.Unix(),
+						Day:         startTime.Weekday().String(),
+						Hour:        startTime.Hour(),
+					}
+
+					if err := m.Write(data); err != nil {
+						log.Println(err)
+					}
+
+					aggregatedData, err := m.getAggregatedAnalytics()
+					if err == nil {
+						client.Trigger("grpc-monitoring", "data", aggregatedData)
+					}
+				}
+			}()
+
+			next.ServeHTTP(w, r)
+		})
 	}
+}
+
+func waitHandler(w http.ResponseWriter, r *http.Request) {
+	var sleepTime = defaultSleepTime
+
+	secondsToSleep := chi.URLParam(r, "seconds")
+	n, err := strconv.Atoi(secondsToSleep)
+	if err == nil && n >= 2 {
+		sleepTime = time.Duration(n) * time.Second
+	} else {
+		n = 2
+	}
+
+	log.Printf("Sleeping for %d seconds", n)
+	time.Sleep(sleepTime)
+	w.Write([]byte(`Done`))
 }
