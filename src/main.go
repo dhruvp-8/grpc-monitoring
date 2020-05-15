@@ -70,12 +70,12 @@ func main() {
 
 	workDir, _ := os.Getwd()
 	filesDir := filepath.Join(workDir, "public")
-	fileServer(mux, "/public/build", http.Dir(filesDir))
+	fileServer(mux, "/public/", http.Dir(filesDir))
 
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 		once.Do(func() {
-			tem, err := template.ParseFiles("public/build/index.html")
+			tem, err := template.ParseFiles("public/index.html")
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -28,4 +28,4 @@
 
 # Remove build files
 
-**/src/public/build
+**/src/public/
