@@ -14,3 +14,13 @@
 # Environment Variables
 **.env
 
+# MacOS Temp Files
+*.DS_Store
+
+# Frontend Dependencies
+**/analytics-frontend/node_modules
+**/analytics-frontend/yarn.lock
+**/analytics-frontend/package-lock.json
+
+# VS Editor
+*.vscode
