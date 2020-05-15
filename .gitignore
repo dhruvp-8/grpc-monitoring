@@ -14,10 +14,3 @@
 # Environment Variables
 **.env
 
-# Frontend related directories and files
-**/analytics-frontend/node_modules
-**/analytics-frontend/yarn.lock
-**/analytics-frontend/README.md
-
-# Remove Mac Dependencies
-*.DS_Store
