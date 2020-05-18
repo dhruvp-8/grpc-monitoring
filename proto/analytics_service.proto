@@ -17,25 +17,25 @@ message Response {
 		}
 
 		ID id = 1;
-		double number_of_requests = 2;
+		int64 number_of_requests = 2;
 	}
 
 	repeated STATS_PER_ROUTE stats_per_route = 2;
 
 	message REQUESTS_PER_DAY {
 		string id = 1;
-		double number_of_requests = 2;
+		int64 number_of_requests = 2;
 	}
 
 	repeated REQUESTS_PER_DAY requests_per_day = 3;
 
 	message REQUESTS_PER_HOUR {
 		string id = 1;
-		double number_of_requests = 2;
+		int64 number_of_requests = 2;
 	}
 
 	repeated REQUESTS_PER_HOUR requests_per_hour = 4;
-	double total_requests = 5;
+	int64 total_requests = 5;
 }
 
 
