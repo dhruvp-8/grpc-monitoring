@@ -3,7 +3,7 @@ module github.com/dhruvp-8/grpc-analytics
 go 1.14
 
 require (
-	github.com/aws/aws-sdk-go v1.30.28
+	github.com/aws/aws-sdk-go v1.34.0
 	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/joho/godotenv v1.3.0
 	github.com/pusher/pusher-http-go v4.0.1+incompatible
