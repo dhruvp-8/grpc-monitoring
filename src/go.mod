@@ -7,6 +7,6 @@ require (
 	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/joho/godotenv v1.3.0
 	github.com/pusher/pusher-http-go v4.0.1+incompatible
-	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
